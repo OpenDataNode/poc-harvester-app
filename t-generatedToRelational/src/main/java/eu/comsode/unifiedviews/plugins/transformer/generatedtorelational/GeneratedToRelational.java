@@ -85,6 +85,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         Connection conn = null;
         try {
             createOutputTable();
+            //Retrieves data from CKAN resource
             fillInputTableFromCKAN();
             LOG.debug("{} records retrieved from CKAN.", inputFromCkan.size());
             Collections.sort(inputFromCkan, new Comparator<GenTableRow>() {
@@ -94,6 +95,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
                 }
             });
             this.output.addExistingDatabaseTable(GENERATED_TABLE_NAME.toUpperCase(), GENERATED_TABLE_NAME.toUpperCase());
+            //If there are no data on input, create first row, else update table in CKAN
             if (inputFromCkan.size() == 0) {
                 LOG.debug("No input table found!");
                 String dateToInsert = fmt.format(new Date());
@@ -106,12 +108,14 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
                 PreparedStatement ps = null;
                 int counter = 0;
                 conn = output.getDatabaseConnection();
+                //Iterate throgh data retrieved from CKAN
                 for (GenTableRow currentRow : inputFromCkan) {
                     counter++;
-//                    Integer lastRunInt = Integer.decode(intFmt.format(currentRow.modificationTimestamp));
                     Integer lastRunInt = Integer.decode(currentRow.data.substring(0, 10).replaceAll("-", "").trim());
                     LOG.debug(String.format("Last run date is: %d, today is: %d", lastRunInt, todayInt));
+                    //If the record is not deleted and it is from previous day, delete it
                     if (currentRow.deletedTimestamp != null) {
+                        //Create new record in database
                         if (counter == inputFromCkan.size() && lastRunInt.compareTo(todayInt) < 0) {
                             LOG.debug("Starting to insert record.");
                             String dateToInsert = fmt.format(new Date());
@@ -139,19 +143,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
                     psInsert = conn.prepareStatement(insertRecQuery);
                     psInsert.execute();
                     conn.commit();
-//                    if (lastRunInt.compareTo(todayInt) < 0 && currentRow.deletedTimestamp == null) {
-//                        LOG.debug("Starting to update and delete records.");
-//                        String queryModify = updateModifyRecordForPrepStmt(GENERATED_TABLE_NAME.toUpperCase(), "data", fmt.format(new Date()));
-//                        ps = conn.prepareStatement(queryModify);
-//                        ps.setLong(1, currentRow.id);
-//                        LOG.debug("Executing query: {} for ID: {}", queryModify, currentRow.id.toString());
-//                        ps.execute();
-//                        String queryDelete = deleteRecordForPrepStmt(GENERATED_TABLE_NAME.toUpperCase());
-//                        ps = conn.prepareStatement(queryDelete);
-//                        ps.setLong(1, currentRow.id);
-//                        LOG.debug("Executing query: {} for ID: {}", queryDelete, currentRow.id.toString());
-//                        ps.execute();
-//                    } else if (lastRunInt.compareTo(todayInt) == 0 && currentRow.deletedTimestamp == null) {
+                    //If record is created today, update it
                     if (lastRunInt.compareTo(todayInt) == 0 && currentRow.deletedTimestamp == null) {
                         LOG.debug("Starting to update records.");
                         String queryModify = updateModifyRecordForPrepStmt(GENERATED_TABLE_NAME.toUpperCase(), "data", fmt.format(new Date()));
@@ -192,6 +184,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return resultist;
     }
 
+    //Creates output table, which will be synchronized with CKAN
     private void createOutputTable() {
         List<ColumnDefinition> tableColumns = createColumnDefinitions();
         String createTableQuery = null;
@@ -212,6 +205,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         }
     }
 
+    //Build update statement
     private String updateModifyRecordForPrepStmt(String tableName, String columnName, String columnValue) {
         StringBuilder sb = new StringBuilder();
         sb.append("UPDATE ");
@@ -224,6 +218,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return sb.toString();
     }
 
+    //Build insert statement
     private String insertRecordForPrepStmt(String tableName, Long id, String data) {
         StringBuilder sb = new StringBuilder();
         sb.append("INSERT INTO ");
@@ -236,6 +231,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return sb.toString();
     }
 
+    //Class to store records internally
     private class GenTableRow {
         Long id;
 
@@ -256,6 +252,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         }
     }
 
+    //Load data from CKAN
     private void fillInputTableFromCKAN() throws DPUException {
         this.context = this.ctx.getExecMasterContext().getDpuContext();
         String shortMessage = this.ctx.tr("dpu.ckan.starting", this.getClass().getSimpleName());
@@ -360,6 +357,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         }
     }
 
+    //Parse values retrieved from CKAN and store them internally
     private GenTableRow parseValues(String values) {
         GenTableRow gtr = new GenTableRow();
         values = values.replace("(", "");
@@ -388,6 +386,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return gtr;
     }
 
+    //Builds create table query
     private String getCreateTableQueryFromMetaData(List<ColumnDefinition> columns, String tableName) throws SQLException {
         StringBuilder query = new StringBuilder();
         query.append("CREATE TABLE ");
@@ -417,6 +416,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return query.toString();
     }
 
+    //Builds query to create not null columns
     private String createAlterColumnSetNotNullQuery(String tableName, String keyColumn) {
         StringBuilder query = new StringBuilder();
         query.append("ALTER TABLE ");
@@ -430,6 +430,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return query.toString();
     }
 
+    //Builds query to create primary keys
     private String createPrimaryKeysQuery(String tableName, List<String> primaryKeys) {
         StringBuilder query = new StringBuilder("ALTER TABLE ");
         query.append(tableName);
@@ -444,6 +445,7 @@ public class GeneratedToRelational extends AbstractDpu<GeneratedToRelationalConf
         return query.toString();
     }
 
+    //Helper class to store db column definition
     public class ColumnDefinition {
 
         private String columnName;
