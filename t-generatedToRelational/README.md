@@ -1,2 +1,11 @@
-# POC_HarvesterApp
-Proof of concept application for harvesting of data from catalog via API
+T-GeneratedToRelational
+-----------------------
+
+### Description ###
+
+* see [Plugin Documentation](./doc/About.md)
+* see [Plugin Documentation](./doc/About_sk.md) (in Slovak)
+
+### Version history ###
+
+* see [Changelog](./CHANGELOG.md)
