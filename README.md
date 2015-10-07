@@ -8,8 +8,12 @@ In Unifiedviews create pipeline consisting of `T-GeneratedToRelational` DPU and 
 
 To test CKAN REST API run script `read_rest.py` from test_app directory.
 It has 3 parameters.
-- mandatory parameter `-d` followed by name of the dataset to browse. (Text after the last slash in the dataset URL)
+- mandatory parameter `-i` followed by CKAN datastore resource ID to process
 - parameter `-u` followed by URL of CKAN installation API, where the dataset was created (Default value is `http://localhost/api/action/`)
-- parameter `-i` followed by ID of the record to show
+- parameter `-a` followed by user API KEY, it is required to access resources of private datasets
+- mandatory parameter '-f' followed by path to CSV file, where the records will be saved
 
-The script with only mandatory parameter `-d` set, will list IDs of all records from the table.
+First run of the script will download all rows of CKAN datastore resource and saved them to CSV file specified in one of the options. Subsequent runs will download and save only changed records from last run.
+
+Run command:
+python read_rest.py -u {host}/api/action/ -i {resource_id} -file /tmp/records.csv
