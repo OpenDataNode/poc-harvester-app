@@ -7,7 +7,7 @@ In CKAN create public dataset called GENERATED_DATA.
 In Unifiedviews create pipeline consisting of `T-GeneratedToRelational` DPU and `L-RelationalDiffToCkan` DPU conected from `output` (`T-GeneratedToRelational`) to `tablesInput` (`L-RelationalDiffToCkan`) and schedule the pipeline to execute every 15 minutes.
 
 To test CKAN REST API run script `read_rest.py` from test_app directory.
-It has 3 parameters.
+It has 4 parameters, only 2 are mandatory.
 - mandatory parameter `-i` followed by CKAN datastore resource ID to process
 - parameter `-u` followed by URL of CKAN installation API, where the dataset was created (Default value is `http://localhost/api/action/`)
 - parameter `-a` followed by user API KEY, it is required to access resources of private datasets
