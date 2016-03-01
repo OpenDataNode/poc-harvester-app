@@ -19,7 +19,7 @@ Datastore CKAN API docs: http://docs.ckan.org/en/latest/maintaining/datastore.ht
 You can check CKAN version with request to API: <host>/api/action/status_show
 
 Run command:
-python read_rest.py -u {host}/api/action/ -i {resource_id} -file /tmp/records.csv
+python read_rest.py -u {host}/api/action/ -i {resource_id} -f /tmp/records.csv
 '''
 import csv
 import optparse
