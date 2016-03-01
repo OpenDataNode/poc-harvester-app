@@ -11,19 +11,21 @@ This is proof-of-concept which:
 
 ## Simulated dataset
 
-'[t-generatedToRelational DPU](./blob/master/t-generatedToRelational/README.md)' is used in pipeline in ODN/UnifiedViews (schedulted to run every 15 minutes) to generate some dummy data:
+'[t-generatedToRelational DPU](./t-generatedToRelational/)' is used in pipeline in ODN/UnifiedViews (schedulted to run every 15 minutes) to generate some dummy data:
 
-| id | data                |
-| -- | ------------------- |
-| 1  | 2016-03-01 12:03:44 |
+| id  | data                |
+| --- | ------------------- |
+| 1   | 2016-02-29 23:03:43 |
+| 2   | 2016-03-01 12:03:44 |
 
 In short: Each day new item is added. EAch 15 minutes it gets updated (putting current date and time into 'data' column). The next day item gets deleted. That represents some quite typical datasets hich do change in time but do not track changes being done to them.
 
 'uv-t-relationalDiffToCkan DPU' is then used to detect the differences/updates in that data and load it into ODN catalog, adding columns 'modified_timestamp' and 'deleted_timestamp' in the process to mark new, modified and deleted items:
 
-| id | data                | modified_timestamp  | deleted_timestamp |
-| -- | ------------------- | ------------------- | ----------------- |
-| 1  | 2016-03-01 12:03:44 | 2016-03-01T12:03:44 |                   |
+| id  | data                | modified_timestamp  | deleted_timestamp   |
+| --- | ------------------- | ------------------- | ------------------- |
+| 1   | 2016-02-29 23:03:43 | 2016-03-01T00:03:47 | 2016-03-01T00:03:47 |
+| 2   | 2016-03-01 12:03:44 | 2016-03-01T12:03:44 |                     |
 
 So the purpose of 'uv-t-relationalDiffToCkan' is to add change tracking missing in original dataset:
 
@@ -36,12 +38,12 @@ You can see a result of that as dataset 'gen-data' at http://data.comsode.eu/dat
 
 The purpose of the harvesting application is to:
 
-1. in first run: to get whole copy of the dataset to your PC
-2. in subsequent runs: to download only changed items
+1. on first run: to get whole copy of the dataset to your PC
+2. on subsequent runs: to download only changed items
 
 Such harvesting is intended mainly for bigger datasets to avoid repeated download of items which have not changed since last harvesting.
 
-Note: This application is written mainly for easy code reading, effective operation is only second goal. So by tweakling it, you might get better performance.
+Note: This application is written mainly for easy code reading, effective operation is only second goal. So by tweaking it, you might get better performance.
 
 # How to use it
 
@@ -60,7 +62,7 @@ How to run harvesting application:
 Harvesting application has 4 parameters, 2 are mandatory.
 
 - mandatory parameter `-i` followed by CKAN datastore resource ID to process
-- parameter `-u` followed by URL of CKAN installation API, where the dataset was created (Default value is `http://localhost/api/action/`)
+- parameter `-u` followed by URL of CKAN installation API, where the dataset was created (default value is `http://localhost/api/action/`)
 - parameter `-a` followed by user API KEY, it is required to access resources of private datasets
 - mandatory parameter '-f' followed by path to CSV file, where the records will be saved
 
