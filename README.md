@@ -69,3 +69,10 @@ Harvesting application has 4 parameters, 2 are mandatory.
 First run of the script will download all rows of CKAN datastore resource and save them to CSV file specified in -f option. Subsequent runs will download and save only records which changed since last run.
 
 Note: Internal CKAN IDs (column '_id') can be seen on catalogue but are skipped in local copy of data.
+
+# Licensing
+
+This proof-of-concept code is licensed as follows:
+
+- t-generatedToRelational DPU is licensed under LGPLv3 (see (./t-generatedToRelational/LICENSE) file)
+- harvesting application is licensed under Simplified BSD license (see (./test_app/LICENSE) file)
