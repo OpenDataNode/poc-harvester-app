@@ -74,5 +74,5 @@ Note: Internal CKAN IDs (column '_id') can be seen on catalogue but are skipped 
 
 This proof-of-concept code is licensed as follows:
 
-- t-generatedToRelational DPU is licensed under LGPLv3 (see (./t-generatedToRelational/LICENSE) file)
-- harvesting application is licensed under Simplified BSD license (see (./test_app/LICENSE) file)
+- t-generatedToRelational DPU is licensed under LGPLv3 (see [LICENSE](./t-generatedToRelational/LICENSE) file)
+- harvesting application is licensed under Simplified BSD license (see [LICENSE](./test_app/LICENSE) file)
